@@ -1,0 +1,70 @@
+name: Autograding Tests
+'on':
+- push
+- repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Dados
+      id: dados
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Dados
+        setup-command: pnpm install
+        command: pnpm run test dice
+        timeout: 10
+        max-score: 20
+    - name: Ordenamiento
+      id: ordenamiento
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Ordenamiento
+        setup-command: pnpm install
+        command: pnpm run test order
+        timeout: 10
+        max-score: 20
+    - name: Matriz
+      id: matriz
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Matriz
+        setup-command: pnpm install
+        command: pnpm run test matrix
+        timeout: 10
+        max-score: 20
+    - name: Tarea
+      id: tarea
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Tarea
+        setup-command: pnpm install
+        command: pnpm run test task
+        timeout: 10
+        max-score: 20
+    - name: Archivo
+      id: archivo
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Archivo
+        setup-command: pnpm install
+        command: pnpm run test file
+        timeout: 10
+        max-score: 20
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        DADOS_RESULTS: "${{steps.dados.outputs.result}}"
+        ORDENAMIENTO_RESULTS: "${{steps.ordenamiento.outputs.result}}"
+        MATRIZ_RESULTS: "${{steps.matriz.outputs.result}}"
+        TAREA_RESULTS: "${{steps.tarea.outputs.result}}"
+        ARCHIVO_RESULTS: "${{steps.archivo.outputs.result}}"
+      with:
+        runners: dados,ordenamiento,matriz,tarea,archivo
